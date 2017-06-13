@@ -10,7 +10,9 @@ import android.support.annotation.NonNull;
 public class Segment {
 
     public int position;
+    public Position centerPosition;
     private Bitmap bitmap;
+    private Position motionPosition;
 
     public Segment(int position) {
         this.position = position;
@@ -23,5 +25,25 @@ public class Segment {
 
     public Bitmap getBitmap() {
         return bitmap;
+    }
+
+    public void setMotionPosition(int x, int y) {
+        if (motionPosition == null) {
+            motionPosition = new Position(x, y);
+            return;
+        }
+        motionPosition.moveTo(x, y);
+    }
+
+    public boolean isMovable() {
+        return motionPosition != null;
+    }
+
+    public Position getMotionPosition() {
+        return motionPosition;
+    }
+
+    public void stopMoving() {
+        motionPosition = null;
     }
 }

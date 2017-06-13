@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
-import com.seotm.jigsawpuzzleview.pattern.SegmentPattern12;
+import com.seotm.jigsawpuzzleview.pattern.p12.SegmentPattern12;
 import com.seotm.jigsawpuzzleview.pattern.SegmentsPattern;
 
 /**
