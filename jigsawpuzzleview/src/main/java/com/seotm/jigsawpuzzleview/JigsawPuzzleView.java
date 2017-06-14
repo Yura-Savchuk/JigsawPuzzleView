@@ -3,6 +3,8 @@ package com.seotm.jigsawpuzzleview;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -19,6 +21,8 @@ import com.seotm.jigsawpuzzleview.pattern.SegmentsPattern;
  */
 
 public class JigsawPuzzleView extends View {
+
+    private static final String SUPER_STATE = "JigsawPuzzleView_superState";
 
     private SegmentsPattern segmentsPattern;
     private SegmentMotion segmentMotion;
@@ -82,5 +86,26 @@ public class JigsawPuzzleView extends View {
             segmentsPattern.blendSegments();
             invalidate();
         }
+    }
+
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(SUPER_STATE, super.onSaveInstanceState());
+        if (segmentsPattern != null) segmentsPattern.saveState(bundle);
+        return bundle;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (state instanceof Bundle) {
+            Bundle bundle = (Bundle) state;
+            if (segmentsPattern != null) {
+                segmentsPattern.restoreState(bundle);
+                invalidate();
+            }
+            state = bundle.getParcelable(SUPER_STATE);
+        }
+        super.onRestoreInstanceState(state);
     }
 }

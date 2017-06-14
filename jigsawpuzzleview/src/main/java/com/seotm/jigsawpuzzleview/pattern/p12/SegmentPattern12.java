@@ -3,6 +3,7 @@ package com.seotm.jigsawpuzzleview.pattern.p12;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
@@ -164,5 +165,15 @@ public class SegmentPattern12 implements SegmentsPattern {
             vertexes[i] = segmentPoint.getSegmentCenterPositionAt(i+1, width, height);
         }
         return vertexes;
+    }
+
+    @Override
+    public void saveState(@NonNull Bundle bundle) {
+        segments.saveState(bundle);
+    }
+
+    @Override
+    public void restoreState(@NonNull Bundle bundle) {
+        segments.restoreState(bundle);
     }
 }

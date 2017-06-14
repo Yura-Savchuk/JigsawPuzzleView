@@ -1,8 +1,11 @@
 package com.seotm.jigsawpuzzleview.pattern;
 
 import android.graphics.Bitmap;
-import android.util.Log;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.SparseIntArray;
+
+import com.seotm.jigsawpuzzleview.state.StateSavable;
 
 import java.util.Random;
 
@@ -10,7 +13,10 @@ import java.util.Random;
  * Created by seotm on 14.06.17.
  */
 
-class SegmentsOrder {
+class SegmentsOrder implements StateSavable {
+
+    private static final String STATE_PARAM_ORDER_KEYS = "SegmentsOrder_order_keys";
+    private static final String STATE_PARAM_ORDER_VALUES = "SegmentsOrder_order_values";
 
     private final SparseIntArray order = new SparseIntArray();
     private final Segments segments;
@@ -79,7 +85,7 @@ class SegmentsOrder {
         return true;
     }
 
-    int getPostionForIndex(int index) {
+    int getPositionForIndex(int index) {
         return order.get(index);
     }
 
@@ -96,4 +102,29 @@ class SegmentsOrder {
             }
         }
     }
+
+    @Override
+    public void saveState(@NonNull Bundle bundle) {
+        int orderSize = order.size();
+        int [] orderKeys = new int[orderSize];
+        int [] orderValues = new int[orderSize];
+        for (int i=0; i<orderSize; i++) {
+            orderKeys[i] = order.keyAt(i);
+            orderValues[i] = order.valueAt(i);
+        }
+        bundle.putIntArray(STATE_PARAM_ORDER_KEYS, orderKeys);
+        bundle.putIntArray(STATE_PARAM_ORDER_VALUES, orderValues);
+    }
+
+    @Override
+    public void restoreState(@NonNull Bundle bundle) {
+        int [] orderKeys = bundle.getIntArray(STATE_PARAM_ORDER_KEYS);
+        int [] orderValues = bundle.getIntArray(STATE_PARAM_ORDER_VALUES);
+        if (orderKeys == null || orderValues == null) return;
+        order.clear();
+        for (int i=0; i<orderKeys.length; i++) {
+            order.put(orderKeys[i], orderValues[i]);
+        }
+    }
+
 }

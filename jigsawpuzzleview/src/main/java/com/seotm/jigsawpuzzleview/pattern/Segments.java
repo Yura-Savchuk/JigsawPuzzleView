@@ -2,16 +2,18 @@ package com.seotm.jigsawpuzzleview.pattern;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
 import com.seotm.jigsawpuzzleview.PuzzleGatherListener;
+import com.seotm.jigsawpuzzleview.state.StateSavable;
 
 /**
  * Created by seotm on 13.06.17.
  */
 
-public class Segments {
+public class Segments implements StateSavable {
 
     final int [] segmentsDrawableRes;
     final Bitmap [] segmentsBitmap;
@@ -72,7 +74,7 @@ public class Segments {
             } else {
                 bitmap = createSegmentFromBitmap(segmentWidth, segmentHeight, i);
             }
-            int position = order.getPostionForIndex(i);
+            int position = order.getPositionForIndex(i);
             sizedSegments[position].setBitmap(bitmap);
         }
     }
@@ -114,6 +116,16 @@ public class Segments {
         if (viewWidth != 0 && viewHeight != 0) {
             updateSize(viewWidth, viewHeight);
         }
+    }
+
+    @Override
+    public void saveState(@NonNull Bundle bundle) {
+        order.saveState(bundle);
+    }
+
+    @Override
+    public void restoreState(@NonNull Bundle bundle) {
+        order.restoreState(bundle);
     }
 
 }
