@@ -2,7 +2,6 @@ package com.seotm.jigsawpuzzleview.pattern;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
@@ -13,6 +12,8 @@ import android.support.annotation.NonNull;
 public class Segments {
 
     private final int [] segmentsDrawableRes;
+    private final Bitmap [] segmentsBitmap;
+
     private final Context context;
     private final SegmentSize segmentSize;
 
@@ -23,6 +24,14 @@ public class Segments {
 
     public Segments(@NonNull @DrawableRes int[] segments, @NonNull Context context, SegmentSize segmentSize) {
         segmentsDrawableRes = segments;
+        segmentsBitmap = null;
+        this.context = context;
+        this.segmentSize = segmentSize;
+    }
+
+    public Segments(Bitmap[] bitmaps, @NonNull Context context, SegmentSize segmentSize) {
+        segmentsDrawableRes = null;
+        segmentsBitmap = bitmaps;
         this.context = context;
         this.segmentSize = segmentSize;
     }
@@ -50,25 +59,43 @@ public class Segments {
         int segmentWidth = (int) (segmentSize.widthRatio*viewWidth);
         int segmentHeight = (int) (segmentSize.heightRatio*viewHeight);
         for (int i=0; i<sizedSegments.length; i++) {
-            int segmentDrawableRes = segmentsDrawableRes[i];
-            Bitmap bitmap = createSegmentBitmap(segmentDrawableRes, segmentWidth, segmentHeight);
+            Bitmap bitmap;
+            if (segmentsDrawableRes != null) {
+                bitmap = createSegmentFromDrawable(segmentWidth, segmentHeight, i);
+            } else {
+                bitmap = createSegmentFromBitmap(segmentWidth, segmentHeight, i);
+            }
             sizedSegments[i].setBitmap(bitmap);
         }
     }
 
+    private Bitmap createSegmentFromDrawable(int segmentWidth, int segmentHeight, int item) {
+        if (segmentsDrawableRes == null) throw new RuntimeException("Internal error.");
+        int drawableRes = segmentsDrawableRes[item];
+        return new BitmapFactoryExtension(context)
+                .createSegmentBitmap(drawableRes, segmentWidth, segmentHeight);
+    }
+
+    private Bitmap createSegmentFromBitmap(int segmentWidth, int segmentHeight, int item) {
+        if (segmentsBitmap == null) throw new RuntimeException("Internal error.");
+        Bitmap segmentBitmap = segmentsBitmap[item];
+        return  Bitmap.createScaledBitmap(segmentBitmap, segmentWidth, segmentHeight, true);
+    }
+
     private void createSegmentsArray() {
         if (sizedSegments != null) return;
-        sizedSegments = new Segment[segmentsDrawableRes.length];
+        sizedSegments = new Segment[getSegmentsCount()];
         for (int i=0; i<sizedSegments.length; i++) {
             sizedSegments[i] = new Segment(i);
         }
     }
 
-    private Bitmap createSegmentBitmap(@DrawableRes int drawableRes, int widht, int height) {
-        Bitmap originalBitmap = BitmapFactory.decodeResource(context.getResources(), drawableRes, null);
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, widht, height, true);
-        originalBitmap.recycle();
-        return scaledBitmap;
+    private int getSegmentsCount() {
+        if (segmentsDrawableRes != null) {
+            return segmentsDrawableRes.length;
+        }
+        if (segmentsBitmap == null) throw new RuntimeException("Internal error.");
+        return segmentsBitmap.length;
     }
 
     public int getViewWidth() {

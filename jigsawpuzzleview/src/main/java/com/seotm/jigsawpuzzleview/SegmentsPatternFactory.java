@@ -1,6 +1,7 @@
 package com.seotm.jigsawpuzzleview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
@@ -28,4 +29,12 @@ public class SegmentsPatternFactory {
         throw new RuntimeException("Un supported segments count. Only 12 segment count supported.");
     }
 
+    public SegmentsPattern createPattern(Bitmap[] bitmaps) {
+        switch (bitmaps.length) {
+            case 12: {
+                return new SegmentPattern12(bitmaps, context);
+            }
+        }
+        throw new RuntimeException("Un supported segments count. Only 12 segment count supported.");
+    }
 }

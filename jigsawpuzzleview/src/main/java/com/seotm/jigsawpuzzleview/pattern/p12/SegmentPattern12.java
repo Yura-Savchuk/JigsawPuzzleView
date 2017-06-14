@@ -1,10 +1,10 @@
 package com.seotm.jigsawpuzzleview.pattern.p12;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.seotm.jigsawpuzzleview.pattern.Position;
 import com.seotm.jigsawpuzzleview.pattern.Segment;
@@ -28,6 +28,11 @@ public class SegmentPattern12 implements SegmentsPattern {
     private final SegmentPositions segmentPositions = new SegmentPositions12();
 
     public SegmentPattern12(@NonNull @DrawableRes int [] segments, @NonNull Context context) {
+        this.segments = new Segments(segments, context, SEGMENT_SIZE);
+        segmentsDrawer = new SegmentsDrawer(this.segments, segmentPositions);
+    }
+
+    public SegmentPattern12(Bitmap[] segments, @NonNull Context context) {
         this.segments = new Segments(segments, context, SEGMENT_SIZE);
         segmentsDrawer = new SegmentsDrawer(this.segments, segmentPositions);
     }

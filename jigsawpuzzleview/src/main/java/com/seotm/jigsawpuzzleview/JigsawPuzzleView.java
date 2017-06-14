@@ -1,6 +1,7 @@
 package com.seotm.jigsawpuzzleview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -37,6 +38,12 @@ public class JigsawPuzzleView extends View {
     public void setSegments(@NonNull @DrawableRes int [] segments) {
         SegmentsPatternFactory patternFct = new SegmentsPatternFactory(getContext());
         segmentsPattern = patternFct.createPattern(segments);
+        segmentMotion = new SegmentMotionImpl(segmentsPattern, this);
+    }
+
+    public void setSegments(@NonNull Bitmap [] bitmaps) {
+        SegmentsPatternFactory patternFct = new SegmentsPatternFactory(getContext());
+        segmentsPattern = patternFct.createPattern(bitmaps);
         segmentMotion = new SegmentMotionImpl(segmentsPattern, this);
     }
 
