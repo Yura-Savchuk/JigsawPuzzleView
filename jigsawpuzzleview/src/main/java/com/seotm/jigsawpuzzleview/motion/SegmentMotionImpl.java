@@ -1,8 +1,10 @@
 package com.seotm.jigsawpuzzleview.motion;
 
+import android.support.annotation.NonNull;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.seotm.jigsawpuzzleview.PuzzleGatherListener;
 import com.seotm.jigsawpuzzleview.pattern.SegmentsPattern;
 
 /**

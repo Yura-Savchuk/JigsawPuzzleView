@@ -22,6 +22,7 @@ public class JigsawPuzzleView extends View {
 
     private SegmentsPattern segmentsPattern;
     private SegmentMotion segmentMotion;
+    private final PuzzleGatherListenerProxy gatherListenerProxy = new PuzzleGatherListenerProxy();
 
     public JigsawPuzzleView(Context context) {
         super(context);
@@ -36,15 +37,19 @@ public class JigsawPuzzleView extends View {
     }
 
     public void setSegments(@NonNull @DrawableRes int [] segments) {
-        SegmentsPatternFactory patternFct = new SegmentsPatternFactory(getContext());
+        SegmentsPatternFactory patternFct = new SegmentsPatternFactory(getContext(), gatherListenerProxy);
         segmentsPattern = patternFct.createPattern(segments);
         segmentMotion = new SegmentMotionImpl(segmentsPattern, this);
     }
 
     public void setSegments(@NonNull Bitmap [] bitmaps) {
-        SegmentsPatternFactory patternFct = new SegmentsPatternFactory(getContext());
+        SegmentsPatternFactory patternFct = new SegmentsPatternFactory(getContext(), gatherListenerProxy);
         segmentsPattern = patternFct.createPattern(bitmaps);
         segmentMotion = new SegmentMotionImpl(segmentsPattern, this);
+    }
+
+    public void setGatherListener(PuzzleGatherListener listener) {
+        this.gatherListenerProxy.listener = listener;
     }
 
     @Override

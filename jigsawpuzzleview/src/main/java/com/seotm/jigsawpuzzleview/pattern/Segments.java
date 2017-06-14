@@ -5,6 +5,8 @@ import android.graphics.Bitmap;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import com.seotm.jigsawpuzzleview.PuzzleGatherListener;
+
 /**
  * Created by seotm on 13.06.17.
  */
@@ -16,20 +18,23 @@ public class Segments {
 
     private final Context context;
     private final SegmentSize segmentSize;
+    private final PuzzleGatherListener gatherListener;
 
     private Segment [] sizedSegments;
 
     private int viewWidth = 0;
     private int viewHeight = 0;
 
-    public Segments(@NonNull @DrawableRes int[] segments, @NonNull Context context, SegmentSize segmentSize) {
+    public Segments(@NonNull @DrawableRes int[] segments, @NonNull Context context, SegmentSize segmentSize, @NonNull PuzzleGatherListener gatherListener) {
         segmentsDrawableRes = segments;
+        this.gatherListener = gatherListener;
         segmentsBitmap = null;
         this.context = context;
         this.segmentSize = segmentSize;
     }
 
-    public Segments(Bitmap[] bitmaps, @NonNull Context context, SegmentSize segmentSize) {
+    public Segments(Bitmap[] bitmaps, @NonNull Context context, SegmentSize segmentSize, @NonNull PuzzleGatherListener gatherListener) {
+        this.gatherListener = gatherListener;
         segmentsDrawableRes = null;
         segmentsBitmap = bitmaps;
         this.context = context;
@@ -110,11 +115,8 @@ public class Segments {
         Segment segment2 = sizedSegments[index];
         if (segment2 == segment) return;
         Position position = segment.centerPosition;
-        int order = segment.position;
         segment.centerPosition = segment2.centerPosition;
-        segment.position = segment2.position;
         segment2.centerPosition = position;
-        segment2.position = order;
         int segmentIndex = 0;
         for (int i=1; i<sizedSegments.length; i++) {
             if (sizedSegments[i] == segment) {
@@ -125,4 +127,20 @@ public class Segments {
         sizedSegments[index] = segment;
         sizedSegments[segmentIndex] = segment2;
     }
+
+    public void stopMoving(@NonNull Segment segment) {
+        segment.stopMoving();
+        if (isSegmentsInSequentialOrder()) {
+            gatherListener.onGathered();
+        }
+    }
+
+    private boolean isSegmentsInSequentialOrder() {
+        for (int i=0; i<sizedSegments.length; i++) {
+            Segment segment = sizedSegments[i];
+            if (segment.position != i) return false;
+        }
+        return true;
+    }
+
 }

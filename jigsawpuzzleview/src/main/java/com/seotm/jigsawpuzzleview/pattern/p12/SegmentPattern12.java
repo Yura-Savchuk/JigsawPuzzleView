@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 
+import com.seotm.jigsawpuzzleview.PuzzleGatherListener;
 import com.seotm.jigsawpuzzleview.pattern.Position;
 import com.seotm.jigsawpuzzleview.pattern.Segment;
 import com.seotm.jigsawpuzzleview.pattern.SegmentPositions;
@@ -27,13 +28,13 @@ public class SegmentPattern12 implements SegmentsPattern {
     private final SegmentsDrawer segmentsDrawer;
     private final SegmentPositions segmentPositions = new SegmentPositions12();
 
-    public SegmentPattern12(@NonNull @DrawableRes int [] segments, @NonNull Context context) {
-        this.segments = new Segments(segments, context, SEGMENT_SIZE);
+    public SegmentPattern12(@NonNull @DrawableRes int [] segments, @NonNull Context context, @NonNull PuzzleGatherListener gatherListener) {
+        this.segments = new Segments(segments, context, SEGMENT_SIZE, gatherListener);
         segmentsDrawer = new SegmentsDrawer(this.segments, segmentPositions);
     }
 
-    public SegmentPattern12(Bitmap[] segments, @NonNull Context context) {
-        this.segments = new Segments(segments, context, SEGMENT_SIZE);
+    public SegmentPattern12(Bitmap[] segments, @NonNull Context context, @NonNull PuzzleGatherListener gatherListener) {
+        this.segments = new Segments(segments, context, SEGMENT_SIZE, gatherListener);
         segmentsDrawer = new SegmentsDrawer(this.segments, segmentPositions);
     }
 
@@ -103,7 +104,7 @@ public class SegmentPattern12 implements SegmentsPattern {
         int [] distanceToVertexes = getDistanceToVertexesFromPosition(motionPos);
         int minDistanceIndex = getMinDistanceIndex(distanceToVertexes);
         segments.swapSegments(minDistanceIndex, segment);
-        segment.stopMoving();
+        segments.stopMoving(segment);
     }
 
     private int[] getDistanceToVertexesFromPosition(Position position) {

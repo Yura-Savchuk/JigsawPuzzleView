@@ -15,15 +15,17 @@ import com.seotm.jigsawpuzzleview.pattern.SegmentsPattern;
 public class SegmentsPatternFactory {
 
     private final Context context;
+    private final PuzzleGatherListener gatherListener;
 
-    public SegmentsPatternFactory(Context context) {
+    public SegmentsPatternFactory(@NonNull Context context, @NonNull PuzzleGatherListenerProxy gatherListener) {
         this.context = context;
+        this.gatherListener = gatherListener;
     }
 
     public SegmentsPattern createPattern(@NonNull @DrawableRes int [] segments) {
         switch (segments.length) {
             case 12: {
-                return new SegmentPattern12(segments, context);
+                return new SegmentPattern12(segments, context, gatherListener);
             }
         }
         throw new RuntimeException("Un supported segments count. Only 12 segment count supported.");
@@ -32,7 +34,7 @@ public class SegmentsPatternFactory {
     public SegmentsPattern createPattern(Bitmap[] bitmaps) {
         switch (bitmaps.length) {
             case 12: {
-                return new SegmentPattern12(bitmaps, context);
+                return new SegmentPattern12(bitmaps, context, gatherListener);
             }
         }
         throw new RuntimeException("Un supported segments count. Only 12 segment count supported.");

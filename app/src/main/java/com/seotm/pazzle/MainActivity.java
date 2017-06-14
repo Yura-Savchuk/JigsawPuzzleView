@@ -5,8 +5,10 @@ import android.graphics.BitmapFactory;
 import android.support.annotation.DrawableRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.seotm.jigsawpuzzleview.JigsawPuzzleView;
+import com.seotm.jigsawpuzzleview.PuzzleGatherListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,5 +54,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         JigsawPuzzleView puzzleView = (JigsawPuzzleView) findViewById(R.id.jigsawPuzzleView);
         puzzleView.setSegments(createSegmentsBitmap());
+        puzzleView.setGatherListener(new PuzzleGatherListener() {
+            @Override
+            public void onGathered() {
+                Log.d("TAG", "onGathered:");
+            }
+        });
     }
 }
