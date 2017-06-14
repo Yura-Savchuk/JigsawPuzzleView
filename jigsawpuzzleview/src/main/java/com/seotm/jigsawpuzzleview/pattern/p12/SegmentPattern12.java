@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.seotm.jigsawpuzzleview.pattern.Position;
 import com.seotm.jigsawpuzzleview.pattern.Segment;
@@ -20,7 +21,7 @@ import com.seotm.jigsawpuzzleview.pattern.SegmentsPattern;
 public class SegmentPattern12 implements SegmentsPattern {
 
     private static final SegmentSize SEGMENT_SIZE = new SegmentSize(6f/16f, 5f/9f);
-    private static final float LEDGE_PART_RATIO = 1f/4f;
+    private static final float LEDGE_PART_RATIO = 1f/6f;
 
     private final Segments segments;
     private final SegmentsDrawer segmentsDrawer;
@@ -66,9 +67,18 @@ public class SegmentPattern12 implements SegmentsPattern {
     @Override
     public void moveMovableSegmentTo(int x, int y) {
         Segment segment = getMovableSegment();
-        if (segment != null) {
-            segment.setMotionPosition(x, y);
-        }
+        if (segment == null) return;
+        int segmentWidth = segment.getBitmap().getWidth();
+        int ledgeSize = (int) (LEDGE_PART_RATIO*segmentWidth);
+        int minX = (segmentWidth - 2*ledgeSize)/2;
+        int maxX = segments.getViewWidth() - minX;
+        int minY = (segment.getBitmap().getHeight() - 2*ledgeSize)/2;
+        int maxY = segments.getViewHeight() - minY;
+        if (x < minX) x = minX;
+        if (x > maxX) x = maxX;
+        if (y < minY) y = minY;
+        if (y > maxY) y = maxY;
+        segment.setMotionPosition(x, y);
     }
 
     private Segment getMovableSegment() {
