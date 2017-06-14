@@ -1,13 +1,13 @@
 package com.seotm.jigsawpuzzleview.pattern.p12;
 
 import com.seotm.jigsawpuzzleview.pattern.Position;
-import com.seotm.jigsawpuzzleview.pattern.SegmentPositions;
+import com.seotm.jigsawpuzzleview.pattern.SegmentPoint;
 
 /**
  * Created by seotm on 13.06.17.
  */
 
-public class SegmentPositions12 implements SegmentPositions {
+class SegmentPoint12 implements SegmentPoint {
     @Override
     public Position getSegmentCenterPositionAt(int ordinalPosition, int w, int h) {
         switch (ordinalPosition) {

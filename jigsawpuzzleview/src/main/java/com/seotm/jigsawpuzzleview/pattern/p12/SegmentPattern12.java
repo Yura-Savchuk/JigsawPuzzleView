@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 import com.seotm.jigsawpuzzleview.PuzzleGatherListener;
 import com.seotm.jigsawpuzzleview.pattern.Position;
 import com.seotm.jigsawpuzzleview.pattern.Segment;
-import com.seotm.jigsawpuzzleview.pattern.SegmentPositions;
+import com.seotm.jigsawpuzzleview.pattern.SegmentPoint;
 import com.seotm.jigsawpuzzleview.pattern.SegmentSize;
 import com.seotm.jigsawpuzzleview.pattern.Segments;
 import com.seotm.jigsawpuzzleview.pattern.SegmentsDrawer;
@@ -24,18 +24,20 @@ public class SegmentPattern12 implements SegmentsPattern {
     private static final SegmentSize SEGMENT_SIZE = new SegmentSize(6f/16f, 5f/9f);
     private static final float LEDGE_PART_RATIO = 1f/6f;
 
+    private static final int EMPTY_INDEX = -1;
+
     private final Segments segments;
     private final SegmentsDrawer segmentsDrawer;
-    private final SegmentPositions segmentPositions = new SegmentPositions12();
+    private final SegmentPoint segmentPoint = new SegmentPoint12();
 
     public SegmentPattern12(@NonNull @DrawableRes int [] segments, @NonNull Context context, @NonNull PuzzleGatherListener gatherListener) {
         this.segments = new Segments(segments, context, SEGMENT_SIZE, gatherListener);
-        segmentsDrawer = new SegmentsDrawer(this.segments, segmentPositions);
+        segmentsDrawer = new SegmentsDrawer(this.segments, segmentPoint);
     }
 
     public SegmentPattern12(Bitmap[] segments, @NonNull Context context, @NonNull PuzzleGatherListener gatherListener) {
         this.segments = new Segments(segments, context, SEGMENT_SIZE, gatherListener);
-        segmentsDrawer = new SegmentsDrawer(this.segments, segmentPositions);
+        segmentsDrawer = new SegmentsDrawer(this.segments, segmentPoint);
     }
 
     @Override
@@ -46,6 +48,11 @@ public class SegmentPattern12 implements SegmentsPattern {
     @Override
     public void updateSize(int w, int h, int oldw, int oldh) {
         segments.updateSize(w, h);
+    }
+
+    @Override
+    public void blendSegments() {
+        segments.blendSegments();
     }
 
     @Override
@@ -96,15 +103,27 @@ public class SegmentPattern12 implements SegmentsPattern {
         return null;
     }
 
+    private int getMovableSegmentIndex() {
+        Segment [] segments = this.segments.getSegments();
+        for (int i=0; i<segments.length; i++) {
+            Segment segment = segments[i];
+            if (segment.isMovable()) {
+                return i;
+            }
+        }
+        return EMPTY_INDEX;
+    }
+
     @Override
     public void updatePositions() {
-        Segment segment = getMovableSegment();
-        if (segment == null) return;
-        Position motionPos = segment.getMotionPosition();
+        int movableSegmentIndex = getMovableSegmentIndex();
+        if (movableSegmentIndex == EMPTY_INDEX) return;
+        Segment movableSegment = segments.getSegments()[movableSegmentIndex];
+        Position motionPos = movableSegment.getMotionPosition();
         int [] distanceToVertexes = getDistanceToVertexesFromPosition(motionPos);
         int minDistanceIndex = getMinDistanceIndex(distanceToVertexes);
-        segments.swapSegments(minDistanceIndex, segment);
-        segments.stopMoving(segment);
+        segments.swapSegments(minDistanceIndex, movableSegmentIndex);
+        segments.stopMoving(movableSegment);
     }
 
     private int[] getDistanceToVertexesFromPosition(Position position) {
@@ -142,7 +161,7 @@ public class SegmentPattern12 implements SegmentsPattern {
         int width = segments.getViewWidth();
         int height = segments.getViewHeight();
         for (int i=0; i<vertexes.length; i++) {
-            vertexes[i] = segmentPositions.getSegmentCenterPositionAt(i+1, width, height);
+            vertexes[i] = segmentPoint.getSegmentCenterPositionAt(i+1, width, height);
         }
         return vertexes;
     }

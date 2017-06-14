@@ -11,9 +11,9 @@ import android.support.annotation.NonNull;
 public class SegmentsDrawer {
 
     private final Segments segments;
-    private final SegmentPositions positions;
+    private final SegmentPoint positions;
 
-    public SegmentsDrawer(Segments segments, SegmentPositions positions) {
+    public SegmentsDrawer(Segments segments, SegmentPoint positions) {
         this.segments = segments;
         this.positions = positions;
     }
@@ -23,36 +23,42 @@ public class SegmentsDrawer {
             segments.updateSize(canvas.getWidth(), canvas.getHeight());
         }
         Segment movableSegment = null;
-        for (Segment segment : segments.getSegments()) {
+        Segment[] segments = this.segments.getSegments();
+        for (int i=0; i<segments.length; i++) {
+            Segment segment = segments[i];
             if (segment.isMovable()) {
                 movableSegment = segment;
             } else {
-                drawSegment(canvas, segment);
+                drawSegment(segment, i, canvas);
             }
         }
-        if (movableSegment != null) {
-            drawSegment(canvas, movableSegment);
-        }
+        if (movableSegment != null) drawMovableSegment(movableSegment, canvas);
     }
 
-    private void drawSegment(@NonNull Canvas canvas, @NonNull Segment segment) {
-        Position centerPosition = getCenterPosition(segment);
+    private void drawSegment(@NonNull Segment segment, int orderPosition, @NonNull Canvas canvas) {
+        Position centerPosition = getCenterPosition(segment, orderPosition);
+        drawSegment(segment, canvas, centerPosition);
+    }
+
+    private void drawSegment(@NonNull Segment segment, @NonNull Canvas canvas, Position centerPosition) {
         Bitmap bitmap = segment.getBitmap();
         int left = centerPosition.getX() - (bitmap.getWidth()/2);
         int top = centerPosition.getY() - (bitmap.getHeight()/2);
         canvas.drawBitmap(bitmap, left, top, null);
     }
 
-    private Position getCenterPosition(@NonNull Segment segment) {
-        if (segment.isMovable()) {
-            return segment.getMotionPosition();
-        }
+    private Position getCenterPosition(@NonNull Segment segment, int orderPosition) {
         if (segment.centerPosition == null) {
             int width = segments.getViewWidth();
             int height = segments.getViewHeight();
-            segment.centerPosition = positions.getSegmentCenterPositionAt(segment.position+1, width, height);
+            segment.centerPosition = positions.getSegmentCenterPositionAt(orderPosition + 1, width, height);
         }
         return segment.centerPosition;
+    }
+
+    private void drawMovableSegment(@NonNull Segment segment, @NonNull Canvas canvas) {
+        if (!segment.isMovable()) throw new RuntimeException("Internal error.");
+        drawSegment(segment, canvas, segment.getMotionPosition());
     }
 
 }

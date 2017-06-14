@@ -6,6 +6,8 @@ import android.support.annotation.DrawableRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.seotm.jigsawpuzzleview.JigsawPuzzleView;
 import com.seotm.jigsawpuzzleview.PuzzleGatherListener;
@@ -48,11 +50,13 @@ public class MainActivity extends AppCompatActivity {
         return BitmapFactory.decodeResource(getResources(), drawableRes, null);
     }
 
+    private JigsawPuzzleView puzzleView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        JigsawPuzzleView puzzleView = (JigsawPuzzleView) findViewById(R.id.jigsawPuzzleView);
+        puzzleView = (JigsawPuzzleView) findViewById(R.id.jigsawPuzzleView);
         puzzleView.setSegments(createSegmentsBitmap());
         puzzleView.setGatherListener(new PuzzleGatherListener() {
             @Override
@@ -61,4 +65,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void onBlendButtonClick(View view) {
+        puzzleView.blendSegments();
+    }
+
 }

@@ -76,4 +76,11 @@ public class JigsawPuzzleView extends View {
         }
         return true;
     }
+
+    public void blendSegments() {
+        if (segmentsPattern != null) {
+            segmentsPattern.blendSegments();
+            invalidate();
+        }
+    }
 }

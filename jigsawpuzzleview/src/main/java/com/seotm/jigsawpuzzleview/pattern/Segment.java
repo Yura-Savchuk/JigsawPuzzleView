@@ -9,13 +9,11 @@ import android.support.annotation.NonNull;
 
 public class Segment {
 
-    public int position;
     public Position centerPosition;
     private Bitmap bitmap;
     private Position motionPosition;
 
-    public Segment(int position) {
-        this.position = position;
+    public Segment() {
     }
 
     public void setBitmap(@NonNull Bitmap bitmap) {

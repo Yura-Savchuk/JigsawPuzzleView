@@ -13,14 +13,14 @@ import com.seotm.jigsawpuzzleview.PuzzleGatherListener;
 
 public class Segments {
 
-    private final int [] segmentsDrawableRes;
-    private final Bitmap [] segmentsBitmap;
+    final int [] segmentsDrawableRes;
+    final Bitmap [] segmentsBitmap;
+    Segment [] sizedSegments;
 
     private final Context context;
     private final SegmentSize segmentSize;
     private final PuzzleGatherListener gatherListener;
-
-    private Segment [] sizedSegments;
+    private final SegmentsOrder order = new SegmentsOrder(this);
 
     private int viewWidth = 0;
     private int viewHeight = 0;
@@ -31,6 +31,7 @@ public class Segments {
         segmentsBitmap = null;
         this.context = context;
         this.segmentSize = segmentSize;
+        order.setupOrderFromInitialData();
     }
 
     public Segments(Bitmap[] bitmaps, @NonNull Context context, SegmentSize segmentSize, @NonNull PuzzleGatherListener gatherListener) {
@@ -39,6 +40,7 @@ public class Segments {
         segmentsBitmap = bitmaps;
         this.context = context;
         this.segmentSize = segmentSize;
+        order.setupOrderFromInitialData();
     }
 
     public boolean isSized() {
@@ -54,13 +56,13 @@ public class Segments {
 
 
     public void updateSize(int w, int h) {
-        createSegmentsArray();
+        order.createSegmentsArray();
         viewWidth = w;
         viewHeight = h;
-        updateSegmentsSize();
+        refreshSizedSegmentsArray();
     }
 
-    private void updateSegmentsSize() {
+    private void refreshSizedSegmentsArray() {
         int segmentWidth = (int) (segmentSize.widthRatio*viewWidth);
         int segmentHeight = (int) (segmentSize.heightRatio*viewHeight);
         for (int i=0; i<sizedSegments.length; i++) {
@@ -70,7 +72,8 @@ public class Segments {
             } else {
                 bitmap = createSegmentFromBitmap(segmentWidth, segmentHeight, i);
             }
-            sizedSegments[i].setBitmap(bitmap);
+            int position = order.getPostionForIndex(i);
+            sizedSegments[position].setBitmap(bitmap);
         }
     }
 
@@ -87,22 +90,6 @@ public class Segments {
         return  Bitmap.createScaledBitmap(segmentBitmap, segmentWidth, segmentHeight, true);
     }
 
-    private void createSegmentsArray() {
-        if (sizedSegments != null) return;
-        sizedSegments = new Segment[getSegmentsCount()];
-        for (int i=0; i<sizedSegments.length; i++) {
-            sizedSegments[i] = new Segment(i);
-        }
-    }
-
-    private int getSegmentsCount() {
-        if (segmentsDrawableRes != null) {
-            return segmentsDrawableRes.length;
-        }
-        if (segmentsBitmap == null) throw new RuntimeException("Internal error.");
-        return segmentsBitmap.length;
-    }
-
     public int getViewWidth() {
         return viewWidth;
     }
@@ -111,36 +98,22 @@ public class Segments {
         return viewHeight;
     }
 
-    public void swapSegments(int index, Segment segment) {
-        Segment segment2 = sizedSegments[index];
-        if (segment2 == segment) return;
-        Position position = segment.centerPosition;
-        segment.centerPosition = segment2.centerPosition;
-        segment2.centerPosition = position;
-        int segmentIndex = 0;
-        for (int i=1; i<sizedSegments.length; i++) {
-            if (sizedSegments[i] == segment) {
-                segmentIndex = i;
-                break;
-            }
-        }
-        sizedSegments[index] = segment;
-        sizedSegments[segmentIndex] = segment2;
+    public void swapSegments(int index1, int index2) {
+        order.swapSegments(index1, index2);
     }
 
     public void stopMoving(@NonNull Segment segment) {
         segment.stopMoving();
-        if (isSegmentsInSequentialOrder()) {
+        if (order.isSegmentsInSequentialOrder()) {
             gatherListener.onGathered();
         }
     }
 
-    private boolean isSegmentsInSequentialOrder() {
-        for (int i=0; i<sizedSegments.length; i++) {
-            Segment segment = sizedSegments[i];
-            if (segment.position != i) return false;
+    public void blendSegments() {
+        order.blend();
+        if (viewWidth != 0 && viewHeight != 0) {
+            updateSize(viewWidth, viewHeight);
         }
-        return true;
     }
 
 }

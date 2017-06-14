@@ -11,5 +11,6 @@ public interface SegmentsPattern extends SegmentMoving {
 
     void onDraw(@NonNull Canvas canvas);
     void updateSize(int w, int h, int oldw, int oldh);
+    void blendSegments();
 
 }
